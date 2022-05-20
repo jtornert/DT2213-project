@@ -69,23 +69,23 @@ function handleMouseMove(event) {
 }
 
 function handleMouseUp(event) {
-  let easingDelta = 0;
+  let durationDelta = 0;
 
   if (Math.abs(pos.dx) > 500) {
     play(samples[3]);
-    easingDelta = -80;
+    durationDelta = -80;
   } else if (Math.abs(pos.dx) > 400) {
     play(samples[2]);
-    easingDelta = -40;
+    durationDelta = -40;
   } else if (Math.abs(pos.dx) > 300) {
     play(samples[1]);
-    easingDelta = -20;
+    durationDelta = -20;
   } else if (Math.abs(pos.dx) < 300) {
     play(samples[0]);
   }
 
   const easing = easeOutBack;
-  const duration = 300 + easingDelta;
+  const duration = 300 + durationDelta;
   const keyframes = [];
 
   for (let i = 0; i < duration; i++) {
