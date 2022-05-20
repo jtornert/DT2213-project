@@ -2,16 +2,19 @@
  * setup
  */
 
+// needed for playing audio
 const audioContext = new AudioContext();
 
+// array of audio samples
 const samples = [];
+// position info of red box
 const pos = {
   x: 0,
   y: 0,
   dx: 0,
   dy: 0,
 };
-
+// red box element info
 let box;
 
 init();
@@ -21,6 +24,7 @@ init();
  */
 
 async function init() {
+  // download samples and store them in the samples array
   const fileNames = ["saw_V1.wav", "saw_V2.wav", "saw_V3.wav", "saw_V4.wav"];
 
   for (const fileName of fileNames) {
@@ -28,6 +32,7 @@ async function init() {
     samples.push(buffer);
   }
 
+  // find red box element in web page
   box = document.getElementById("box");
 
   box.addEventListener("mousedown", handleMouseDown);
@@ -60,8 +65,8 @@ function handleMouseMove(event) {
   pos.dx = event.clientX - pos.x;
   pos.dy = event.clientY - pos.y;
   box.style.transform = `translate(
-    ${dragX(pos.dx)}px,
-    ${dragY(pos.dy)}px
+    ${easeDragX(pos.dx)}px,
+    ${easeDragY(pos.dy)}px
   )`;
 }
 
@@ -88,8 +93,8 @@ function handleMouseUp(event) {
   for (let i = 0; i < duration; i++) {
     keyframes.push({
       transform: `translate(
-        ${dragX(pos.dx * (1 - easing(i / duration)))}px, 
-        ${dragY(pos.dy * (1 - easing(i / duration)))}px
+        ${easeDragX(pos.dx * (1 - easing(i / duration)))}px, 
+        ${easeDragY(pos.dy * (1 - easing(i / duration)))}px
       )`,
     });
   }
@@ -105,11 +110,11 @@ function handleMouseUp(event) {
  * easing
  */
 
-function dragX(x) {
+function easeDragX(x) {
   return Math.atan(x / 500) * 250;
 }
 
-function dragY(x) {
+function easeDragY(x) {
   return Math.atan(x / 500) * 100;
 }
 
