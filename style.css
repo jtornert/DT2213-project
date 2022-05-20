@@ -1,0 +1,17 @@
+body {
+  margin: auto;
+  width: 90%;
+  max-width: 600px;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#box {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  border-radius: 0.2em;
+  transition: translate 1s;
+}
