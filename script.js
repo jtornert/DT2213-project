@@ -73,15 +73,15 @@ function handleMouseUp(event) {
 
   if (Math.abs(pos.dx) > 500) {
     play(samples[3]);
+    easingDelta = -80;
   } else if (Math.abs(pos.dx) > 400) {
     play(samples[2]);
-    easingDelta = -20;
+    easingDelta = -40;
   } else if (Math.abs(pos.dx) > 300) {
     play(samples[1]);
-    easingDelta = -40;
+    easingDelta = -20;
   } else if (Math.abs(pos.dx) < 300) {
     play(samples[0]);
-    easingDelta = -80;
   }
 
   const easing = easeOutBack;
