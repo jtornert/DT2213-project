@@ -2,9 +2,9 @@
  * setup
  */
 
-const audioCtx = new AudioContext();
+const audioContext = new AudioContext();
 
-const samples = new Array(4);
+const samples = [];
 const pos = {
   x: 0,
   y: 0,
@@ -21,15 +21,12 @@ init();
  */
 
 async function init() {
-  const bufferV1 = await fetchAudioBuffer("saw_V1.wav");
-  const bufferV2 = await fetchAudioBuffer("saw_V2.wav");
-  const bufferV3 = await fetchAudioBuffer("saw_V3.wav");
-  const bufferV4 = await fetchAudioBuffer("saw_V4.wav");
+  const fileNames = ["saw_V1.wav", "saw_V2.wav", "saw_V3.wav", "saw_V4.wav"];
 
-  samples[0] = bufferV1;
-  samples[1] = bufferV2;
-  samples[2] = bufferV3;
-  samples[3] = bufferV4;
+  for (const fileName of fileNames) {
+    const buffer = await fetchAudioBuffer(fileName);
+    samples.push(buffer);
+  }
 
   box = document.getElementById("box");
 
@@ -39,15 +36,15 @@ async function init() {
 async function fetchAudioBuffer(url) {
   return fetch(new Request(url))
     .then((response) => response.arrayBuffer())
-    .then((buffer) => audioCtx.decodeAudioData(buffer))
+    .then((buffer) => audioContext.decodeAudioData(buffer))
     .catch((err) => console.log(err));
 }
 
 function play(buffer) {
-  const source = audioCtx.createBufferSource();
+  const source = audioContext.createBufferSource();
   source.buffer = buffer;
   source.onended = () => delete source;
-  source.connect(audioCtx.destination);
+  source.connect(audioContext.destination);
   source.start(0);
 }
 
