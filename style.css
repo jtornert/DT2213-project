@@ -19,6 +19,7 @@ svg path {
   fill: none;
   stroke: green;
   stroke-width: 1em;
+  stroke-linecap: round;
 }
 
 #string1 {

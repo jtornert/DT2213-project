@@ -58,7 +58,7 @@ function handleMouseDown(event) {
 function handleMouseMove(event) {
   pos.dx = event.clientX - pos.x;
   pos.dy = event.clientY - pos.y;
-  tension(pos.dx);
+  tension(pos.dx, pos.dy);
 }
 
 function handleMouseUp(event) {
@@ -81,8 +81,11 @@ function handleMouseUp(event) {
   window.removeEventListener("mouseup", handleMouseUp);
 }
 
-function tension(x) {
-  string.setAttribute("d", `M 100 0 q ${easeDragX(x)} 100 0 200`);
+function tension(x, y) {
+  string.setAttribute(
+    "d",
+    `M 100 10 q ${easeDragX(x)} ${100 + easeDragY(y)} 0 200`
+  );
 }
 
 function animateRelease(durationBase, durationDelta) {
@@ -91,7 +94,12 @@ function animateRelease(durationBase, durationDelta) {
   const keyframes = [];
 
   for (let i = 0; i < duration; i++) {
-    keyframes.push(() => tension(pos.dx * (1 - easing(i / duration))));
+    keyframes.push(() =>
+      tension(
+        pos.dx * (1 - easing(i / duration)),
+        pos.dy * (1 - easing(i / duration))
+      )
+    );
   }
 
   let i = 0;
@@ -111,7 +119,7 @@ function easeDragX(x) {
 }
 
 function easeDragY(x) {
-  return Math.atan(x / 500) * 100;
+  return Math.atan(x / 500) * 75;
 }
 
 function easeOutBack(x) {
