@@ -4,6 +4,17 @@
 
 const audioContext = new AudioContext();
 
+const colors = [
+  "#008000",
+  "#ff8f00",
+  "#8000f0",
+  "#308050",
+  "#cc8cc0",
+  "#ccbbaa",
+  "#222222",
+];
+let currentColor = 0;
+
 const samples = [];
 const pos = {
   x: 0,
@@ -72,6 +83,7 @@ function handleMouseUp(event) {
   let index = Math.floor(force * (samples.length - 1));
 
   play(samples[index]);
+  changeColor(string);
   animateRelease(string, 30, durationDelta);
 
   window.removeEventListener("mousemove", handleMouseMove);
@@ -107,6 +119,10 @@ function animateRelease(element, durationBase, durationDelta) {
       tension(element, 0, 0);
     } else keyframes[i++]();
   }, 5);
+}
+
+function changeColor(element) {
+  element.style.stroke = colors[++currentColor % colors.length];
 }
 
 /*
