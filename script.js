@@ -58,6 +58,7 @@ function handleMouseDown(event) {
 function handleMouseMove(event) {
   pos.dx = event.clientX - pos.x;
   pos.dy = event.clientY - pos.y;
+
   tension(string, pos.dx, pos.dy);
 }
 
@@ -106,8 +107,7 @@ function animateRelease(element, durationBase, durationDelta) {
   let i = 0;
   const interval = setInterval(() => {
     if (i >= duration) clearInterval(interval);
-
-    keyframes[i++]();
+    else keyframes[i++]();
   }, 5);
 }
 
