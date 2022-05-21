@@ -67,11 +67,11 @@ function handleMouseUp(event) {
   if (Math.abs(pos.dx) > 500) {
     play(samples[3]);
     durationDelta = -10;
-  } else if (Math.abs(pos.dx) > 400) {
-    play(samples[2]);
   } else if (Math.abs(pos.dx) > 300) {
+    play(samples[2]);
+  } else if (Math.abs(pos.dx) > 100) {
     play(samples[1]);
-  } else if (Math.abs(pos.dx) < 300) {
+  } else if (Math.abs(pos.dx) < 100) {
     play(samples[0]);
   }
 
