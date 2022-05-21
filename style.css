@@ -8,20 +8,10 @@ body {
   overflow: hidden;
 }
 
-#box {
-  width: 100px;
-  height: 100px;
-  background-color: red;
-  border-radius: 0.2em;
-}
-
 svg path {
   fill: none;
   stroke: green;
   stroke-width: 1em;
   stroke-linecap: round;
-}
-
-#string1 {
   cursor: pointer;
 }

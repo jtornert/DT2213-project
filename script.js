@@ -64,18 +64,14 @@ function handleMouseMove(event) {
 
 function handleMouseUp(event) {
   let durationDelta = 0;
-
-  if (Math.abs(pos.dx) > 500) {
-    play(samples[3]);
+  let force = Math.abs(pos.dx) / 500;
+  if (force > 1) {
+    force = 1;
     durationDelta = -10;
-  } else if (Math.abs(pos.dx) > 300) {
-    play(samples[2]);
-  } else if (Math.abs(pos.dx) > 100) {
-    play(samples[1]);
-  } else if (Math.abs(pos.dx) < 100) {
-    play(samples[0]);
   }
+  let index = Math.floor(force * (samples.length - 1));
 
+  play(samples[index]);
   animateRelease(string, 30, durationDelta);
 
   window.removeEventListener("mousemove", handleMouseMove);
@@ -106,8 +102,10 @@ function animateRelease(element, durationBase, durationDelta) {
 
   let i = 0;
   const interval = setInterval(() => {
-    if (i >= duration) clearInterval(interval);
-    else keyframes[i++]();
+    if (i >= duration) {
+      clearInterval(interval);
+      tension(element, 0, 0);
+    } else keyframes[i++]();
   }, 5);
 }
 
