@@ -33,7 +33,7 @@ async function init() {
 }
 
 async function fetchAudioBuffer(url) {
-  return fetch(new Request(url))
+  return fetch(new Request("sounds/" + url))
     .then((response) => response.arrayBuffer())
     .then((buffer) => audioContext.decodeAudioData(buffer))
     .catch((err) => console.log(err));
