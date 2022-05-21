@@ -14,3 +14,13 @@ body {
   background-color: red;
   border-radius: 0.2em;
 }
+
+svg path {
+  fill: none;
+  stroke: green;
+  stroke-width: 1em;
+}
+
+#string1 {
+  cursor: pointer;
+}
