@@ -5,22 +5,11 @@
 const audioContext = new AudioContext();
 
 class SoundString {
-  // const hues = [300, 90, 350, 200];
   hues;
   samples;
   current;
   pos;
   element;
-  // const samples = [];
-  // let current = 0;
-
-  // const pos = {
-  //   x: 0,
-  //   y: 0,
-  //   dx: 0,
-  //   dy: 0,
-  // };
-  // let string;
 
   constructor(hues, samples, current, element) {
     this.hues = hues;
@@ -38,20 +27,6 @@ class SoundString {
   }
 }
 
-// const hues = [300, 90, 350, 200];
-const samples = [];
-// let current = 0;
-
-// const pos = {
-//   x: 0,
-//   y: 0,
-//   dx: 0,
-//   dy: 0,
-// };
-// let string;
-
-let strings = [];
-
 init();
 
 /*
@@ -59,18 +34,23 @@ init();
  */
 
 async function init() {
-  const fileNames = [
-    "Ddrums(drum1).wav",
-    "Riq(drum2).wav",
-    "Tabla(drum3).wav",
-    "Darbuka(drum4).wav",
-    "harp.wav",
+  const fileNamesByString = [
+    [
+      "concrete/bubbling.wav",
+      "concrete/jumping.wav",
+      "concrete/pop.wav",
+      "concrete/shew.wav",
+    ],
+    [
+      "Drums/Darbuka.wav",
+      "Drums/Ddrums.wav",
+      "Drums/Riq.wav",
+      "Drums/Tabla.wav",
+    ],
+    ["string/guitar.wav", "string/harp.wav", "string/violin.wav"],
+    ["synth/synth1.wav", "synth/synth2.wav", "synth/synth3.wav"],
+    ["wind/accordion.wav", "wind/panflute.wav", "wind/saxophone.wav"],
   ];
-
-  for (const fileName of fileNames) {
-    const buffer = await fetchAudioBuffer(fileName);
-    samples.push(buffer);
-  }
 
   const ids = ["string1", "string2", "string3", "string4", "string5"];
 
@@ -109,12 +89,27 @@ async function init() {
 
   const hueList = [300, 200, 100, 350, 250];
 
-  for (let i = 0; i < 5; i++) {
+  let i = 0;
+  for (const fileNames of fileNamesByString) {
+    const samples = [];
+
+    for (const fileName of fileNames) {
+      const buffer = await fetchAudioBuffer(fileName);
+      samples.push(buffer);
+    }
+
     stringElement = document.getElementById(`string${i + 1}`);
     const string = new SoundString(hueList, samples, i, stringElement);
     const stringFunction = generateHandleMouseDown(string);
     stringElement.addEventListener("mousedown", stringFunction);
+    ++i;
   }
+
+  document
+    .querySelectorAll("svg")
+    .forEach((element) => element.classList.add("show"));
+
+  await playAmbience();
 }
 
 async function fetchAudioBuffer(url) {
@@ -133,6 +128,18 @@ function play(buffer, tension) {
   source.onended = () => delete source;
   source.connect(gainNode);
   source.start(0);
+}
+
+async function playAmbience() {
+  const ambience = await fetchAudioBuffer("birds.wav");
+  const ambienceNode = audioContext.createBufferSource();
+  const gainNode = audioContext.createGain();
+  gainNode.gain.value = 0.1;
+  gainNode.connect(audioContext.destination);
+  ambienceNode.buffer = ambience;
+  ambienceNode.loop = true;
+  ambienceNode.connect(gainNode);
+  ambienceNode.start(0);
 }
 
 // function handleMouseDown(event) {
@@ -206,7 +213,7 @@ function changeGlow(string, x) {
   string.element.style.setProperty("--glow", x * 0.5 + 0.5);
 }
 function changeWidth(string, x) {
-  string.element.style.setProperty("--width", `${x + 1}em`);
+  string.element.style.setProperty("--width", `${x * 0.25 + 1}em`);
 }
 
 /*
