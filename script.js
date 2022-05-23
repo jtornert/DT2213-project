@@ -5,13 +5,7 @@
 const audioContext = new AudioContext();
 
 class SoundString {
-  hues;
-  samples;
-  current;
-  pos;
-  element;
-
-  constructor(hues, samples, element) {
+  constructor(hues, samples, path, circle) {
     this.hues = hues;
     this.samples = samples;
     this.current = -1;
@@ -21,7 +15,9 @@ class SoundString {
       dx: 0,
       dy: 0,
     };
-    this.element = element;
+    this.path = path;
+    this.circle = circle;
+    this.timeout = 0;
 
     changeColor(this);
   }
@@ -63,14 +59,13 @@ async function init() {
     };
 
     const handleMouseUp = (event) => {
-      let durationDelta = 0;
+      const buffer = string.samples[string.current % string.samples.length];
+      const lengthInSeconds = buffer.length / 44100;
 
-      play(
-        string.samples[string.current % string.samples.length],
-        string.pos.dx
-      );
+      play(buffer, string.pos.dx);
       changeColor(string);
-      animateRelease(string, 30, durationDelta);
+      animateRelease(string);
+      showCircle(string, lengthInSeconds);
 
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
@@ -98,14 +93,16 @@ async function init() {
       samples.push(buffer);
     }
 
-    stringElement = document.getElementById(`string${i + 1}`);
+    pathElement = document.getElementById(`string${i + 1}`);
+    circleElement = document.getElementById(`circle${i + 1}`);
     const string = new SoundString(
       hueList.slice(i, i + fileNames.length),
       samples,
-      stringElement
+      pathElement,
+      circleElement
     );
     const stringFunction = generateHandleMouseDown(string);
-    stringElement.addEventListener("mousedown", stringFunction);
+    pathElement.addEventListener("mousedown", stringFunction);
     ++i;
   }
 
@@ -147,15 +144,15 @@ async function playAmbience() {
 }
 
 function tension(string, x, y) {
-  string.element.setAttribute(
+  string.path.setAttribute(
     "d",
     `M 100 50 q ${easeDragX(x)} ${100 + easeDragY(y)} 0 200`
   );
 }
 
-function animateRelease(string, durationBase, durationDelta) {
+function animateRelease(string) {
   const easing = easeOutBack;
-  const duration = durationBase + durationDelta;
+  const duration = 30;
   const keyframes = [];
   const max = string.pos.dx;
 
@@ -181,17 +178,28 @@ function animateRelease(string, durationBase, durationDelta) {
 }
 
 function changeColor(string) {
-  string.element.style.setProperty(
+  string.path.style.setProperty(
     "--h",
     string.hues[++string.current % string.hues.length]
   );
 }
 
 function changeGlow(string, x) {
-  string.element.style.setProperty("--glow", x * 0.5 + 0.5);
+  string.path.style.setProperty("--glow", x * 0.5 + 0.5);
 }
+
 function changeWidth(string, x) {
-  string.element.style.setProperty("--width", `${x * 0.25 + 1}em`);
+  string.path.style.setProperty("--width", `${x * 0.25 + 1}em`);
+}
+
+function showCircle(string, timeout) {
+  string.circle.classList.add("show");
+
+  if (string.timeout) clearTimeout(string.timeout);
+
+  string.timeout = setTimeout(() => {
+    string.circle.classList.remove("show");
+  }, timeout * 1000);
 }
 
 /*

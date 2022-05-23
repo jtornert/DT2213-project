@@ -52,6 +52,21 @@ svg path {
   filter: drop-shadow(0 0 10px hsla(var(--h), var(--s), var(--l), var(--glow)));
 }
 
+svg circle {
+  stroke: white;
+  stroke-width: 3;
+  fill: transparent;
+  stroke-dasharray: 3em 2em 1em;
+  transform-origin: center;
+  opacity: 0;
+  transition: opacity 500ms ease;
+  animation: playing 5000ms linear infinite;
+}
+
+svg circle.show {
+  opacity: 0.8;
+}
+
 svg {
   opacity: 0;
   transition: opacity 500ms ease;
@@ -59,4 +74,19 @@ svg {
 
 svg.show {
   opacity: 1;
+}
+
+@keyframes playing {
+  0% {
+    transform: rotate(0deg);
+    stroke: hsl(0, 0%, 100%);
+  }
+  50% {
+    transform: rotate(180deg);
+    stroke: hsl(180, 25%, 60%);
+  }
+  100% {
+    transform: rotate(360deg);
+    stroke: hsl(360, 0%, 100%);
+  }
 }
