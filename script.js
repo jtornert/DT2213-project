@@ -11,10 +11,10 @@ class SoundString {
   pos;
   element;
 
-  constructor(hues, samples, current, element) {
+  constructor(hues, samples, element) {
     this.hues = hues;
     this.samples = samples;
-    this.current = current % samples.length;
+    this.current = -1;
     this.pos = {
       x: 0,
       y: 0,
@@ -87,7 +87,7 @@ async function init() {
     return handleMouseDown;
   };
 
-  const hueList = [300, 200, 100, 350, 250, 40];
+  const hueList = [300, 200, 100, 350, 250, 40, 150];
 
   let i = 0;
   for (const fileNames of fileNamesByString) {
@@ -100,9 +100,8 @@ async function init() {
 
     stringElement = document.getElementById(`string${i + 1}`);
     const string = new SoundString(
-      hueList.slice(0, fileNames.length),
+      hueList.slice(i, i + fileNames.length),
       samples,
-      i,
       stringElement
     );
     const stringFunction = generateHandleMouseDown(string);
