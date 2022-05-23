@@ -1,17 +1,44 @@
 body {
-  margin: auto;
-  width: 90%;
-  max-width: 600px;
-  display: grid;
-  place-items: center;
+  margin: 0;
+  background-color: rgb(7, 16, 47);
+  color: white;
+  text-align: center;
   min-height: 100vh;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  font-family: sans-serif;
+}
+
+header span {
+  display: block;
+  margin-top: 2em;
+  font-weight: 700;
+  font-size: 1.25em;
+}
+
+.strings {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 }
 
 svg path {
+  --h: 300;
+  --s: 50%;
+  --l: 60%;
+  --a: 1;
+  --color: hsla(var(--h), var(--s), var(--l), var(--a));
+  --glow: 0;
+  --width: 1em;
+
   fill: none;
-  stroke: green;
-  stroke-width: 1em;
+  stroke: var(--color);
+  stroke-width: var(--width);
   stroke-linecap: round;
   cursor: pointer;
+  filter: drop-shadow(0 0 10px hsla(var(--h), var(--s), var(--l), var(--glow)));
 }

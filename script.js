@@ -4,25 +4,53 @@
 
 const audioContext = new AudioContext();
 
-const colors = [
-  "#008000",
-  "#ff8f00",
-  "#8000f0",
-  "#308050",
-  "#cc8cc0",
-  "#ccbbaa",
-  "#222222",
-];
-let currentColor = 0;
+class SoundString {
+  // const hues = [300, 90, 350, 200];
+  hues;
+  samples;
+  current;
+  pos;
+  element;
+  // const samples = [];
+  // let current = 0;
 
+  // const pos = {
+  //   x: 0,
+  //   y: 0,
+  //   dx: 0,
+  //   dy: 0,
+  // };
+  // let string;
+
+  constructor(hues, samples, current, element) {
+    this.hues = hues;
+    this.samples = samples;
+    this.current = current % samples.length;
+    this.pos = {
+      x: 0,
+      y: 0,
+      dx: 0,
+      dy: 0,
+    };
+    this.element = element;
+
+    changeColor(this);
+  }
+}
+
+// const hues = [300, 90, 350, 200];
 const samples = [];
-const pos = {
-  x: 0,
-  y: 0,
-  dx: 0,
-  dy: 0,
-};
-let string;
+// let current = 0;
+
+// const pos = {
+//   x: 0,
+//   y: 0,
+//   dx: 0,
+//   dy: 0,
+// };
+// let string;
+
+let strings = [];
 
 init();
 
@@ -31,98 +59,154 @@ init();
  */
 
 async function init() {
-  const fileNames = ["saw_V1.wav", "saw_V2.wav", "saw_V3.wav", "saw_V4.wav"];
+  const fileNames = [
+    "Ddrums(drum1).wav",
+    "Riq(drum2).wav",
+    "Tabla(drum3).wav",
+    "Darbuka(drum4).wav",
+    "harp.wav",
+  ];
 
   for (const fileName of fileNames) {
     const buffer = await fetchAudioBuffer(fileName);
     samples.push(buffer);
   }
 
-  string = document.getElementById("string1");
+  const ids = ["string1", "string2", "string3", "string4", "string5"];
 
-  string.addEventListener("mousedown", handleMouseDown);
+  const generateHandleMouseDown = (string) => {
+    const handleMouseMove = (event) => {
+      string.pos.dx = event.clientX - string.pos.x;
+      string.pos.dy = event.clientY - string.pos.y;
+
+      tension(string, string.pos.dx, string.pos.dy);
+    };
+
+    const handleMouseUp = (event) => {
+      let durationDelta = 0;
+
+      play(
+        string.samples[string.current % string.samples.length],
+        string.pos.dx
+      );
+      changeColor(string);
+      animateRelease(string, 30, durationDelta);
+
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    const handleMouseDown = (event) => {
+      string.pos.x = event.clientX;
+      string.pos.y = event.clientY;
+
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    };
+
+    return handleMouseDown;
+  };
+
+  const hueList = [300, 200, 100, 350, 250];
+
+  for (let i = 0; i < 5; i++) {
+    stringElement = document.getElementById(`string${i + 1}`);
+    const string = new SoundString(hueList, samples, i, stringElement);
+    const stringFunction = generateHandleMouseDown(string);
+    stringElement.addEventListener("mousedown", stringFunction);
+  }
 }
 
 async function fetchAudioBuffer(url) {
-  return fetch(new Request("sounds/" + url))
+  return fetch(new Request("/sounds/" + url))
     .then((response) => response.arrayBuffer())
     .then((buffer) => audioContext.decodeAudioData(buffer))
     .catch((err) => console.log(err));
 }
 
-function play(buffer) {
+function play(buffer, tension) {
   const source = audioContext.createBufferSource();
+  const gainNode = audioContext.createGain();
+  gainNode.gain.value = tension / 500;
+  gainNode.connect(audioContext.destination);
   source.buffer = buffer;
   source.onended = () => delete source;
-  source.connect(audioContext.destination);
+  source.connect(gainNode);
   source.start(0);
 }
 
-function handleMouseDown(event) {
-  pos.x = event.clientX;
-  pos.y = event.clientY;
+// function handleMouseDown(event) {
+//   pos.x = event.clientX;
+//   pos.y = event.clientY;
 
-  window.addEventListener("mousemove", handleMouseMove);
-  window.addEventListener("mouseup", handleMouseUp);
-}
+//   window.addEventListener("mousemove", handleMouseMove);
+//   window.addEventListener("mouseup", handleMouseUp);
+// }
 
-function handleMouseMove(event) {
-  pos.dx = event.clientX - pos.x;
-  pos.dy = event.clientY - pos.y;
+// function handleMouseMove(event) {
+//   pos.dx = event.clientX - pos.x;
+//   pos.dy = event.clientY - pos.y;
 
-  tension(string, pos.dx, pos.dy);
-}
+//   tension(string, pos.dx, pos.dy);
+// }
 
-function handleMouseUp(event) {
-  let durationDelta = 0;
-  let force = Math.abs(pos.dx) / 500;
-  if (force > 1) {
-    force = 1;
-    durationDelta = -10;
-  }
-  let index = Math.floor(force * (samples.length - 1));
+// function handleMouseUp(event) {
+//   let durationDelta = 0;
 
-  play(samples[index]);
-  changeColor(string);
-  animateRelease(string, 30, durationDelta);
+//   play(samples[current % samples.length], pos.dx);
+//   changeColor(string);
+//   animateRelease(string, 30, durationDelta);
 
-  window.removeEventListener("mousemove", handleMouseMove);
-  window.removeEventListener("mouseup", handleMouseUp);
-}
+//   window.removeEventListener("mousemove", handleMouseMove);
+//   window.removeEventListener("mouseup", handleMouseUp);
+// }
 
-function tension(element, x, y) {
-  element.setAttribute(
+function tension(string, x, y) {
+  string.element.setAttribute(
     "d",
-    `M 100 10 q ${easeDragX(x)} ${100 + easeDragY(y)} 0 200`
+    `M 100 50 q ${easeDragX(x)} ${100 + easeDragY(y)} 0 200`
   );
 }
 
-function animateRelease(element, durationBase, durationDelta) {
+function animateRelease(string, durationBase, durationDelta) {
   const easing = easeOutBack;
   const duration = durationBase + durationDelta;
   const keyframes = [];
+  const max = string.pos.dx;
 
   for (let i = 0; i < duration; i++) {
-    keyframes.push(() =>
+    keyframes.push(() => {
       tension(
-        element,
-        pos.dx * (1 - easing(i / duration)),
-        pos.dy * (1 - easing(i / duration))
-      )
-    );
+        string,
+        string.pos.dx * (1 - easing(i / duration)),
+        string.pos.dy * (1 - easing(i / duration))
+      );
+      changeGlow(string, (string.pos.dx / max) * (1 - i / duration));
+      changeWidth(string, (string.pos.dx / max) * (1 - i / duration));
+    });
   }
 
   let i = 0;
   const interval = setInterval(() => {
     if (i >= duration) {
       clearInterval(interval);
-      tension(element, 0, 0);
+      tension(string, 0, 0);
     } else keyframes[i++]();
   }, 5);
 }
 
-function changeColor(element) {
-  element.style.stroke = colors[++currentColor % colors.length];
+function changeColor(string) {
+  string.element.style.setProperty(
+    "--h",
+    string.hues[++string.current % string.hues.length]
+  );
+}
+
+function changeGlow(string, x) {
+  string.element.style.setProperty("--glow", x * 0.5 + 0.5);
+}
+function changeWidth(string, x) {
+  string.element.style.setProperty("--width", `${x + 1}em`);
 }
 
 /*
@@ -142,4 +226,8 @@ function easeOutBack(x) {
   const c3 = c1 + 1;
 
   return 1 + c3 * Math.pow(x - 1, 9) + c1 * Math.pow(x - 1, 2);
+}
+
+function easeOutExpo(x) {
+  return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
 }
