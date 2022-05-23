@@ -87,7 +87,7 @@ async function init() {
     return handleMouseDown;
   };
 
-  const hueList = [300, 200, 100, 350, 250];
+  const hueList = [300, 200, 100, 350, 250, 40];
 
   let i = 0;
   for (const fileNames of fileNamesByString) {
@@ -99,7 +99,12 @@ async function init() {
     }
 
     stringElement = document.getElementById(`string${i + 1}`);
-    const string = new SoundString(hueList, samples, i, stringElement);
+    const string = new SoundString(
+      hueList.slice(0, fileNames.length),
+      samples,
+      i,
+      stringElement
+    );
     const stringFunction = generateHandleMouseDown(string);
     stringElement.addEventListener("mousedown", stringFunction);
     ++i;
