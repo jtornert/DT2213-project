@@ -147,32 +147,6 @@ async function playAmbience() {
   ambienceNode.start(0);
 }
 
-// function handleMouseDown(event) {
-//   pos.x = event.clientX;
-//   pos.y = event.clientY;
-
-//   window.addEventListener("mousemove", handleMouseMove);
-//   window.addEventListener("mouseup", handleMouseUp);
-// }
-
-// function handleMouseMove(event) {
-//   pos.dx = event.clientX - pos.x;
-//   pos.dy = event.clientY - pos.y;
-
-//   tension(string, pos.dx, pos.dy);
-// }
-
-// function handleMouseUp(event) {
-//   let durationDelta = 0;
-
-//   play(samples[current % samples.length], pos.dx);
-//   changeColor(string);
-//   animateRelease(string, 30, durationDelta);
-
-//   window.removeEventListener("mousemove", handleMouseMove);
-//   window.removeEventListener("mouseup", handleMouseUp);
-// }
-
 function tension(string, x, y) {
   string.element.setAttribute(
     "d",
