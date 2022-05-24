@@ -7,6 +7,9 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-image: url(trees.png);
+  background-size: cover;
+  background-blend-mode: normal;
 }
 
 header {
